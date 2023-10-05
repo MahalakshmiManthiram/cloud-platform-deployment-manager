@@ -860,6 +860,10 @@ type ProfileBaseAttributes struct {
 	// +optional
 	AppArmor *string `json:"appArmor,omitempty"`
 
+	// AppArmor2 defines the security model on the host.
+	// +optional
+	AppArmor2 *string `json:"appArmor2,omitempty"`
+
 	// HwSettle defines the wait time for SCSI devices to show up.
 	// +kubebuilder:validation:Pattern=^[0-9]+$
 	// +optional

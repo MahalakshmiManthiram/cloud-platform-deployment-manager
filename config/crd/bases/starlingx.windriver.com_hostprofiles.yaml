@@ -81,6 +81,9 @@ spec:
               appArmor:
                 description: AppArmor defines the security model on the host.
                 type: string
+              appArmor2:
+                description: AppArmor2 defines the security model on the host.
+                type: string
               base:
                 description: "Base defines the name of another HostProfile from which
                   to inherit attributes.  HostProfiles can be structured in a hierarchy

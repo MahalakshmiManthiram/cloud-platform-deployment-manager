@@ -1509,6 +1509,11 @@ func (in *ProfileBaseAttributes) DeepCopyInto(out *ProfileBaseAttributes) {
 		*out = new(string)
 		**out = **in
 	}
+	if in.AppArmor2 != nil {
+		in, out := &in.AppArmor2, &out.AppArmor2
+		*out = new(string)
+		**out = **in
+	}
 	if in.HwSettle != nil {
 		in, out := &in.HwSettle, &out.HwSettle
 		*out = new(string)

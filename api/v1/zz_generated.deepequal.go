@@ -1772,6 +1772,16 @@ func (in *ProfileBaseAttributes) DeepEqual(other *ProfileBaseAttributes) bool {
 		}
 	}
 
+	if in.AppArmor2 != nil {
+		if (in.AppArmor2 == nil) != (other.AppArmor2 == nil) {
+			return false
+		} else if in.AppArmor2 != nil {
+			if *in.AppArmor2 != *other.AppArmor2 {
+				return false
+			}
+		}
+	}
+
 	if in.HwSettle != nil {
 		if (in.HwSettle == nil) != (other.HwSettle == nil) {
 			return false
