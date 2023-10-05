@@ -115,6 +115,7 @@ var (
 		"addresses":            []string{"address", "interface", "prefix"},
 		"administrativeState":  nil,
 		"appArmor":             nil,
+		"appArmor2":            nil,
 		"base":                 nil,
 		"boardManagement":      []string{"address", "credentials"},
 		"bootDevice":           nil,

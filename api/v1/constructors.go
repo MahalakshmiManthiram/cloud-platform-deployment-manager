@@ -817,6 +817,9 @@ func NewHostProfileSpec(host v1info.HostInfo) (*HostProfileSpec, error) {
 	if host.AppArmor != "" {
 		spec.AppArmor = &host.AppArmor
 	}
+	if host.AppArmor2 != "" {
+		spec.AppArmor2 = &host.AppArmor2
+	}
 	if host.MaxCPUMhzConfigured != "" {
 		spec.MaxCPUMhzConfigured = &host.MaxCPUMhzConfigured
 	}

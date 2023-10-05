@@ -283,6 +283,11 @@ func (r *HostReconciler) UpdateRequired(instance *starlingxv1.Host, profile *sta
 		opts.AppArmor = profile.AppArmor
 	}
 
+	if profile.AppArmor2 != nil && *profile.AppArmor2 != h.AppArmor2 {
+		result = true
+		opts.AppArmor2 = profile.AppArmor2
+	}
+
 	if profile.HwSettle != nil && *profile.HwSettle != h.HwSettle {
 		result = true
 		opts.HwSettle = profile.HwSettle
@@ -389,7 +394,7 @@ func (r *HostReconciler) HTTPSRequired() bool {
 // host resource.
 func (r *HostReconciler) ReconcileAttributes(client *gophercloud.ServiceClient, instance *starlingxv1.Host, profile *starlingxv1.HostProfileSpec, host *hosts.Host) error {
 	if opts, ok, err := r.UpdateRequired(instance, profile, host); ok && err == nil {
-
+		logHost.Info("updating host attributes", "host.AppArmor2: ", host.AppArmor2)
 		if opts.BMPassword != nil && strings.HasPrefix(client.Endpoint, cloudManager.HTTPPrefix) {
 			if r.HTTPSRequired() {
 				// Do not send password information in the clear.
@@ -401,7 +406,7 @@ func (r *HostReconciler) ReconcileAttributes(client *gophercloud.ServiceClient, 
 		}
 
 		logHost.Info("updating host attributes", "opts", opts)
-
+		logHost.Info("updating host attributes", "host.AppArmor2: ", host.AppArmor2)
 		result, err := hosts.Update(client, host.ID, opts).Extract()
 		if err != nil || result == nil {
 			err = perrors.Wrapf(err, "failed to update host attributes: %s, %s",

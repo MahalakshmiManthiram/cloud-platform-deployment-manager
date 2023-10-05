@@ -1,0 +1,8 @@
+
+manager:
+  image:
+    repository: registry.local:9001/docker.io/wind-river/cloud-platform-deployment-manager
+    tag: aa
+    pullPolicy: IfNotPresent
+rbacProxy:
+  image: registry.local:9001/gcr.io/kubebuilder/kube-rbac-proxy:v0.13.1

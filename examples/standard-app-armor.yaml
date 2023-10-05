@@ -163,6 +163,7 @@ metadata:
   namespace: deployment
 spec:
   appArmor: enabled
+  appArmor2: enabled
   base: common-profile
   interfaces:
     ethernet:

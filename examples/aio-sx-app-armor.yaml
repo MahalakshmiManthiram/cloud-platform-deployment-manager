@@ -95,6 +95,7 @@ metadata:
 spec:
   administrativeState: unlocked
   appArmor: enabled
+  appArmor2: enabled
   bootDevice: /dev/disk/by-path/pci-0000:00:0d.0-ata-1.0
   console: tty0
   installOutput: text
