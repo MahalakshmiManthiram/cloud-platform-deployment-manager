@@ -296,10 +296,7 @@ var _ = Describe("Test Build utilities:", func() {
 				}
 				got := parseIncompleteSecret(&secret)
 				expect := IncompleteSecret{
-					TypeMeta: metav1.TypeMeta{
-						APIVersion: "v1",
-						Kind:       "Secret",
-					},
+					TypeMeta: metav1.TypeMeta{},
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      "foo",
 						Namespace: "bar",
@@ -678,10 +675,7 @@ var _ = Describe("Test Build utilities:", func() {
 				fakeInput := []byte("")
 
 				secret := v1.Secret{
-					TypeMeta: metav1.TypeMeta{
-						APIVersion: "v1",
-						Kind:       "Secret",
-					},
+					TypeMeta: metav1.TypeMeta{},
 					ObjectMeta: metav1.ObjectMeta{
 						Name:      secName,
 						Namespace: ns,
