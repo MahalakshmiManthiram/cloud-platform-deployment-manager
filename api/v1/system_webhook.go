@@ -16,6 +16,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
+	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 )
 
 // log is for logging in this package.
@@ -83,13 +84,14 @@ func (r *System) SetupWebhookWithManager(mgr ctrl.Manager) error {
 
 // +kubebuilder:webhook:path=/mutate-starlingx-windriver-com-v1-system,mutating=true,failurePolicy=fail,sideEffects=None,groups=starlingx.windriver.com,resources=systems,verbs=create;update,versions=v1,name=msystem.kb.io,admissionReviewVersions=v1,timeoutSeconds=30
 
-var _ webhook.Defaulter = &System{}
+var _ webhook.CustomDefaulter = &System{}
 
 // Default implements webhook.Defaulter so a webhook will be registered for the type
-func (r *System) Default() {
+func (r *System) Default(ctx context.Context, obj runtime.Object) error {
 	systemlog.Info("default", "name", r.Name)
 
 	// TODO(user): fill in your defaulting logic.
+	return nil
 }
 
 func validateBackendServices(backendType string, services []string) error {
@@ -222,26 +224,26 @@ func (r *System) validatingSystem() error {
 // TODO(user): change verbs to "verbs=create;update;delete" if you want to enable deletion validation.
 // +kubebuilder:webhook:verbs=create;update,path=/validate-starlingx-windriver-com-v1-system,mutating=false,failurePolicy=fail,sideEffects=None,groups=starlingx.windriver.com,resources=systems,versions=v1,name=vsystem.kb.io,admissionReviewVersions=v1,timeoutSeconds=30
 
-var _ webhook.Validator = &System{}
+var _ webhook.CustomValidator = &System{}
 
 // ValidateCreate implements webhook.Validator so a webhook will be registered for the type
-func (r *System) ValidateCreate() error {
+func (r *System) ValidateCreate(ctx context.Context, obj runtime.Object) (admission.Warnings, error) {
 	systemlog.Info("validate create", "name", r.Name)
 
-	return r.validatingSystem()
+	return nil, r.validatingSystem()
 }
 
 // ValidateUpdate implements webhook.Validator so a webhook will be registered for the type
-func (r *System) ValidateUpdate(old runtime.Object) error {
+func (r *System) ValidateUpdate(ctx context.Context, old runtime.Object, new runtime.Object) (admission.Warnings, error) {
 	systemlog.Info("validate update", "name", r.Name)
 
-	return r.validatingSystem()
+	return nil, r.validatingSystem()
 }
 
 // ValidateDelete implements webhook.Validator so a webhook will be registered for the type
-func (r *System) ValidateDelete() error {
+func (r *System) ValidateDelete(ctx context.Context, obj runtime.Object) (admission.Warnings, error) {
 	systemlog.Info("validate delete", "name", r.Name)
 
 	// TODO(user): fill in your validation logic upon object deletion.
-	return nil
+	return nil, nil
 }

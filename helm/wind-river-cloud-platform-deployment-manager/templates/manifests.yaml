@@ -510,25 +510,25 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
       containers:
-      {{- if .Values.rbacProxy.enabled }}
-      - args:
-        - --secure-listen-address=0.0.0.0:{{ .Values.rbacProxy.port }}
-        - --upstream=http://127.0.0.1:8080/
-        - --logtostderr=true
-        - --v={{ .Values.rbacProxy.logLevel }}
-        image: {{ .Values.rbacProxy.image }}
-        name: kube-rbac-proxy
-        ports:
-        - containerPort: {{ .Values.rbacProxy.port }}
-          name: https
-          protocol: TCP
-      {{- end }}
+      # {{- if .Values.rbacProxy.enabled }}
+      # - args:
+      #   - --secure-listen-address=0.0.0.0:{{ .Values.rbacProxy.port }}
+      #   - --upstream=http://127.0.0.1:8080/
+      #   - --logtostderr=true
+      #   - --v={{ .Values.rbacProxy.logLevel }}
+      #   image: {{ .Values.rbacProxy.image }}
+      #   name: kube-rbac-proxy
+      #   ports:
+      #   - containerPort: {{ .Values.rbacProxy.port }}
+      #     name: https
+      #     protocol: TCP
+      # {{- end }}
       - args:
         {{- if .Values.manager.debugger.enabled }}
         - /manager
         {{- end }}
         - --health-probe-bind-address=:8081
-        - --metrics-bind-address=127.0.0.1:8080
+        - --metrics-bind-address=127.0.0.1:9443
         - --leader-elect={{ include "calculatedValue.leaderElection" . | trim }}
         - --zap-time-encoding=rfc3339nano
         - --zap-encoder=console

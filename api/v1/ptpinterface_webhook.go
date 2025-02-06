@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"strings"
@@ -12,6 +13,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
+	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 )
 
 // Webhook response reasons
@@ -28,13 +30,14 @@ func (r *PtpInterface) SetupWebhookWithManager(mgr ctrl.Manager) error {
 
 // +kubebuilder:webhook:path=/mutate-starlingx-windriver-com-v1-ptpinterface,mutating=true,failurePolicy=fail,sideEffects=None,groups=starlingx.windriver.com,resources=ptpinterfaces,verbs=create;update,versions=v1,name=mptpinterface.kb.io,admissionReviewVersions=v1,timeoutSeconds=30
 
-var _ webhook.Defaulter = &PtpInterface{}
+var _ webhook.CustomDefaulter = &PtpInterface{}
 
 // Default implements webhook.Defaulter so a webhook will be registered for the type
-func (r *PtpInterface) Default() {
+func (r *PtpInterface) Default(ctx context.Context, obj runtime.Object) error {
 	ptpinterfacelog.Info("default", "name", r.Name)
 
 	// TODO(user): fill in your defaulting logic.
+	return nil
 }
 
 // Validates an incoming resource update/create request.  The intent of this validation is to perform only the
@@ -70,28 +73,28 @@ func (r *PtpInterface) validatePtpInterface() error {
 // TODO(user): change verbs to "verbs=create;update;delete" if you want to enable deletion validation.
 // +kubebuilder:webhook:verbs=create;update,path=/validate-starlingx-windriver-com-v1-ptpinterface,mutating=false,failurePolicy=fail,sideEffects=None,groups=starlingx.windriver.com,resources=ptpinterfaces,versions=v1,name=vptpinterface.kb.io,admissionReviewVersions=v1,timeoutSeconds=30
 
-var _ webhook.Validator = &PtpInterface{}
+var _ webhook.CustomValidator = &PtpInterface{}
 
 // ValidateCreate implements webhook.Validator so a webhook will be registered for the type
-func (r *PtpInterface) ValidateCreate() error {
+func (r *PtpInterface) ValidateCreate(ctx context.Context, obj runtime.Object) (admission.Warnings, error) {
 	ptpinterfacelog.Info("validate create", "name", r.Name)
 
 	// TODO(user): fill in your validation logic upon object creation.
-	return r.validatePtpInterface()
+	return nil, r.validatePtpInterface()
 }
 
 // ValidateUpdate implements webhook.Validator so a webhook will be registered for the type
-func (r *PtpInterface) ValidateUpdate(old runtime.Object) error {
+func (r *PtpInterface) ValidateUpdate(ctx context.Context, old runtime.Object, new runtime.Object) (admission.Warnings, error) {
 	ptpinterfacelog.Info("validate update", "name", r.Name)
 
 	// TODO(user): fill in your validation logic upon object update.
-	return r.validatePtpInterface()
+	return nil, r.validatePtpInterface()
 }
 
 // ValidateDelete implements webhook.Validator so a webhook will be registered for the type
-func (r *PtpInterface) ValidateDelete() error {
+func (r *PtpInterface) ValidateDelete(ctx context.Context, obj runtime.Object) (admission.Warnings, error) {
 	ptpinterfacelog.Info("validate delete", "name", r.Name)
 
 	// TODO(user): fill in your validation logic upon object deletion.
-	return nil
+	return nil, nil
 }

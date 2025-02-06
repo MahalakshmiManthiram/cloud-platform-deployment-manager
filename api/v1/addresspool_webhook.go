@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"errors"
 
 	"github.com/wind-river/cloud-platform-deployment-manager/common"
@@ -11,6 +12,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
+	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 )
 
 // Webhook response reasons
@@ -32,14 +34,14 @@ func (r *AddressPool) SetupWebhookWithManager(mgr ctrl.Manager) error {
 }
 
 // +kubebuilder:webhook:path=/mutate-starlingx-windriver-com-v1-addresspool,mutating=true,failurePolicy=fail,sideEffects=None,groups=starlingx.windriver.com,resources=addresspools,verbs=create;update,versions=v1,name=maddresspool.kb.io,admissionReviewVersions=v1,timeoutSeconds=30
-
-var _ webhook.Defaulter = &AddressPool{}
+var _ webhook.CustomDefaulter = &AddressPool{}
 
 // Default implements webhook.Defaulter so a webhook will be registered for the type
-func (r *AddressPool) Default() {
+func (r *AddressPool) Default(ctx context.Context, obj runtime.Object) error {
 	addresspoollog.Info("default", "name", r.Name)
 
 	// TODO(user): fill in your defaulting logic.
+	return nil
 }
 
 // Determines if a string is a valid IP address
@@ -132,28 +134,28 @@ func (r *AddressPool) validateAddressPool() error {
 // TODO(user): change verbs to "verbs=create;update;delete" if you want to enable deletion validation.
 // +kubebuilder:webhook:verbs=create;update,path=/validate-starlingx-windriver-com-v1-addresspool,mutating=false,failurePolicy=fail,sideEffects=None,groups=starlingx.windriver.com,resources=addresspools,versions=v1,name=vaddresspool.kb.io,admissionReviewVersions=v1,timeoutSeconds=30
 
-var _ webhook.Validator = &AddressPool{}
+var _ webhook.CustomValidator = &AddressPool{}
 
-// ValidateCreate implements webhook.Validator so a webhook will be registered for the type
-func (r *AddressPool) ValidateCreate() error {
+// ValidateCreate implements webhook.CustomValidator so a webhook will be registered for the type
+func (r *AddressPool) ValidateCreate(ctx context.Context, obj runtime.Object) (admission.Warnings, error) {
 	addresspoollog.Info("validate create", "name", r.Name)
 
 	// TODO(user): fill in your validation logic upon object creation.
-	return r.validateAddressPool()
+	return nil, r.validateAddressPool()
 }
 
 // ValidateUpdate implements webhook.Validator so a webhook will be registered for the type
-func (r *AddressPool) ValidateUpdate(old runtime.Object) error {
+func (r *AddressPool) ValidateUpdate(ctx context.Context, oldObj runtime.Object, newObj runtime.Object) (admission.Warnings, error) {
 	addresspoollog.Info("validate update", "name", r.Name)
 
 	// TODO(user): fill in your validation logic upon object update.
-	return r.validateAddressPool()
+	return nil, r.validateAddressPool()
 }
 
 // ValidateDelete implements webhook.Validator so a webhook will be registered for the type
-func (r *AddressPool) ValidateDelete() error {
+func (r *AddressPool) ValidateDelete(ctx context.Context, obj runtime.Object) (admission.Warnings, error) {
 	addresspoollog.Info("validate delete", "name", r.Name)
 
 	// TODO(user): fill in your validation logic upon object deletion.
-	return nil
+	return nil, nil
 }

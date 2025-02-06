@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"errors"
 
 	"github.com/gophercloud/gophercloud/starlingx/inventory/v1/datanetworks"
@@ -11,6 +12,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
+	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 )
 
 // log is for logging in this package.
@@ -23,7 +25,7 @@ func (r *DataNetwork) SetupWebhookWithManager(mgr ctrl.Manager) error {
 }
 
 // +kubebuilder:webhook:path=/mutate-starlingx-windriver-com-v1-datanetwork,mutating=true,failurePolicy=fail,sideEffects=None,groups=starlingx.windriver.com,resources=datanetworks,verbs=create;update,versions=v1,name=mdatanetwork.kb.io,admissionReviewVersions=v1,timeoutSeconds=30
-var _ webhook.Defaulter = &DataNetwork{}
+var _ webhook.CustomDefaulter = &AddressPool{}
 
 // Webhook response reasons
 const AllowedReason string = "allowed to be admitted"
@@ -47,27 +49,27 @@ func (r *DataNetwork) validateDataNetwork() error {
 
 // TODO(user): change verbs to "verbs=create;update;delete" if you want to enable deletion validation.
 // +kubebuilder:webhook:verbs=create;update,path=/validate-starlingx-windriver-com-v1-datanetwork,mutating=false,failurePolicy=fail,sideEffects=None,groups=starlingx.windriver.com,resources=datanetworks,versions=v1,name=vdatanetwork.kb.io,admissionReviewVersions=v1,timeoutSeconds=30
-var _ webhook.Validator = &DataNetwork{}
+var _ webhook.CustomValidator = &DataNetwork{}
 
 // ValidateCreate implements webhook.Validator so a webhook will be registered for the type
-func (r *DataNetwork) ValidateCreate() error {
+func (r *DataNetwork) ValidateCreate(ctx context.Context, obj runtime.Object) (admission.Warnings, error) {
 	datanetworklog.Info("validate create", "name", r.Name)
 
 	// TODO(user): fill in your validation logic upon object creation.
-	return r.validateDataNetwork()
+	return nil, r.validateDataNetwork()
 }
 
 // ValidateUpdate implements webhook.Validator so a webhook will be registered for the type
-func (r *DataNetwork) ValidateUpdate(old runtime.Object) error {
+func (r *DataNetwork) ValidateUpdate(ctx context.Context, old runtime.Object, new runtime.Object) (admission.Warnings, error) {
 	datanetworklog.Info("validate update", "name", r.Name)
 
-	return r.validateDataNetwork()
+	return nil, r.validateDataNetwork()
 }
 
 // ValidateDelete implements webhook.Validator so a webhook will be registered for the type
-func (r *DataNetwork) ValidateDelete() error {
+func (r *DataNetwork) ValidateDelete(ctx context.Context, obj runtime.Object) (admission.Warnings, error) {
 	datanetworklog.Info("validate delete", "name", r.Name)
 
 	// TODO(user): fill in your validation logic upon object deletion.
-	return nil
+	return nil, nil
 }

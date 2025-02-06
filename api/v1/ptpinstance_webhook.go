@@ -4,6 +4,7 @@
 package v1
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"strings"
@@ -12,6 +13,7 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
+	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 )
 
 // Webhook response reasons
@@ -28,13 +30,14 @@ func (r *PtpInstance) SetupWebhookWithManager(mgr ctrl.Manager) error {
 
 // +kubebuilder:webhook:path=/mutate-starlingx-windriver-com-v1-ptpinstance,mutating=true,failurePolicy=fail,sideEffects=None,groups=starlingx.windriver.com,resources=ptpinstances,verbs=create;update,versions=v1,name=mptpinstance.kb.io,admissionReviewVersions=v1,timeoutSeconds=30
 
-var _ webhook.Defaulter = &PtpInstance{}
+var _ webhook.CustomDefaulter = &PtpInstance{}
 
 // Default implements webhook.Defaulter so a webhook will be registered for the type
-func (r *PtpInstance) Default() {
+func (r *PtpInstance) Default(ctx context.Context, obj runtime.Object) error {
 	ptpinstancelog.Info("default", "name", r.Name)
 
 	// TODO(user): fill in your defaulting logic.
+	return nil
 }
 
 // Validates an incoming resource update/create request.  The intent of this validation is to perform only the
@@ -69,28 +72,28 @@ func (r *PtpInstance) validatePtpInstance() error {
 // TODO(user): change verbs to "verbs=create;update;delete" if you want to enable deletion validation.
 // +kubebuilder:webhook:verbs=create;update,path=/validate-starlingx-windriver-com-v1-ptpinstance,mutating=false,failurePolicy=fail,sideEffects=None,groups=starlingx.windriver.com,resources=ptpinstances,versions=v1,name=vptpinstance.kb.io,admissionReviewVersions=v1,timeoutSeconds=30
 
-var _ webhook.Validator = &PtpInstance{}
+var _ webhook.CustomValidator = &PtpInstance{}
 
 // ValidateCreate implements webhook.Validator so a webhook will be registered for the type
-func (r *PtpInstance) ValidateCreate() error {
+func (r *PtpInstance) ValidateCreate(ctx context.Context, obj runtime.Object) (admission.Warnings, error) {
 	ptpinstancelog.Info("validate create", "name", r.Name)
 
 	// TODO(user): fill in your validation logic upon object creation.
-	return r.validatePtpInstance()
+	return nil, r.validatePtpInstance()
 }
 
 // ValidateUpdate implements webhook.Validator so a webhook will be registered for the type
-func (r *PtpInstance) ValidateUpdate(old runtime.Object) error {
+func (r *PtpInstance) ValidateUpdate(ctx context.Context, old runtime.Object, new runtime.Object) (admission.Warnings, error) {
 	ptpinstancelog.Info("validate update", "name", r.Name)
 
 	// TODO(user): fill in your validation logic upon object update.
-	return r.validatePtpInstance()
+	return nil, r.validatePtpInstance()
 }
 
 // ValidateDelete implements webhook.Validator so a webhook will be registered for the type
-func (r *PtpInstance) ValidateDelete() error {
+func (r *PtpInstance) ValidateDelete(ctx context.Context, obj runtime.Object) (admission.Warnings, error) {
 	ptpinstancelog.Info("validate delete", "name", r.Name)
 
 	// TODO(user): fill in your validation logic upon object deletion.
-	return nil
+	return nil, nil
 }

@@ -17,6 +17,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/client-go/kubernetes/scheme"
 	ctrl "sigs.k8s.io/controller-runtime"
+	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
 
 	starlingxv1 "github.com/wind-river/cloud-platform-deployment-manager/api/v1"
 	comm "github.com/wind-river/cloud-platform-deployment-manager/common"
@@ -530,8 +531,10 @@ var _ = Describe("Host controller", func() {
 			namespace := "ns1"
 
 			k8sManager1, _ := ctrl.NewManager(cfg, ctrl.Options{
-				Scheme:             scheme.Scheme,
-				MetricsBindAddress: "0",
+				Scheme: scheme.Scheme,
+				Metrics: metricsserver.Options{
+					BindAddress: "0",
+				},
 			})
 			r := &HostReconciler{
 				Client: k8sManager1.GetClient(),
@@ -549,8 +552,10 @@ var _ = Describe("Host controller", func() {
 		It("SHould return false when other hostProfileSpec is nil", func() {
 			in := &starlingxv1.HostProfileSpec{}
 			var k8sManager, _ = ctrl.NewManager(cfg, ctrl.Options{
-				Scheme:             scheme.Scheme,
-				MetricsBindAddress: "0",
+				Scheme: scheme.Scheme,
+				Metrics: metricsserver.Options{
+					BindAddress: "0",
+				},
 			})
 			r := &HostReconciler{
 				Client: k8sManager.GetClient(),
@@ -564,8 +569,10 @@ var _ = Describe("Host controller", func() {
 			in := &starlingxv1.HostProfileSpec{}
 			other := &starlingxv1.HostProfileSpec{}
 			var k8sManager, _ = ctrl.NewManager(cfg, ctrl.Options{
-				Scheme:             scheme.Scheme,
-				MetricsBindAddress: "0",
+				Scheme: scheme.Scheme,
+				Metrics: metricsserver.Options{
+					BindAddress: "0",
+				},
 			})
 			r := &HostReconciler{
 				Client: k8sManager.GetClient(),
@@ -594,8 +601,10 @@ var _ = Describe("Host controller", func() {
 			}
 
 			var k8sManager, _ = ctrl.NewManager(cfg, ctrl.Options{
-				Scheme:             scheme.Scheme,
-				MetricsBindAddress: "0",
+				Scheme: scheme.Scheme,
+				Metrics: metricsserver.Options{
+					BindAddress: "0",
+				},
 			})
 			r := &HostReconciler{
 				Client: k8sManager.GetClient(),
@@ -632,8 +641,10 @@ var _ = Describe("Host controller", func() {
 			}
 
 			var k8sManager, _ = ctrl.NewManager(cfg, ctrl.Options{
-				Scheme:             scheme.Scheme,
-				MetricsBindAddress: "0",
+				Scheme: scheme.Scheme,
+				Metrics: metricsserver.Options{
+					BindAddress: "0",
+				},
 			})
 			r := &HostReconciler{
 				Client: k8sManager.GetClient(),
@@ -666,8 +677,10 @@ var _ = Describe("Host controller", func() {
 			}
 
 			var k8sManager, _ = ctrl.NewManager(cfg, ctrl.Options{
-				Scheme:             scheme.Scheme,
-				MetricsBindAddress: "0",
+				Scheme: scheme.Scheme,
+				Metrics: metricsserver.Options{
+					BindAddress: "0",
+				},
 			})
 			r := &HostReconciler{
 				Client: k8sManager.GetClient(),
@@ -700,8 +713,10 @@ var _ = Describe("Host controller", func() {
 			}
 
 			var k8sManager, _ = ctrl.NewManager(cfg, ctrl.Options{
-				Scheme:             scheme.Scheme,
-				MetricsBindAddress: "0",
+				Scheme: scheme.Scheme,
+				Metrics: metricsserver.Options{
+					BindAddress: "0",
+				},
 			})
 			r := &HostReconciler{
 				Client: k8sManager.GetClient(),

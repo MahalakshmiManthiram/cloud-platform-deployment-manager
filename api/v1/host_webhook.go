@@ -4,12 +4,14 @@
 package v1
 
 import (
+	"context"
 	"errors"
 
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
+	"sigs.k8s.io/controller-runtime/pkg/webhook/admission"
 )
 
 // Webhook response reasons
@@ -26,13 +28,14 @@ func (r *Host) SetupWebhookWithManager(mgr ctrl.Manager) error {
 
 // +kubebuilder:webhook:path=/mutate-starlingx-windriver-com-v1-host,mutating=true,failurePolicy=fail,sideEffects=None,groups=starlingx.windriver.com,resources=hosts,verbs=create;update,versions=v1,name=mhost.kb.io,admissionReviewVersions=v1,timeoutSeconds=30
 
-var _ webhook.Defaulter = &Host{}
+var _ webhook.CustomDefaulter = &Host{}
 
 // Default implements webhook.Defaulter so a webhook will be registered for the type
-func (r *Host) Default() {
+func (r *Host) Default(ctx context.Context, obj runtime.Object) error {
 	hostlog.Info("default", "name", r.Name)
 
 	// TODO(user): fill in your defaulting logic.
+	return nil
 }
 
 func (r *Host) validateMatchBMInfo() error {
@@ -89,28 +92,28 @@ func (r *Host) validateHost() error {
 // TODO(user): change verbs to "verbs=create;update;delete" if you want to enable deletion validation.
 // +kubebuilder:webhook:verbs=create;update,path=/validate-starlingx-windriver-com-v1-host,mutating=false,failurePolicy=fail,sideEffects=None,groups=starlingx.windriver.com,resources=hosts,versions=v1,name=vhost.kb.io,admissionReviewVersions=v1,timeoutSeconds=30
 
-var _ webhook.Validator = &Host{}
+var _ webhook.CustomValidator = &Host{}
 
 // ValidateCreate implements webhook.Validator so a webhook will be registered for the type
-func (r *Host) ValidateCreate() error {
+func (r *Host) ValidateCreate(ctx context.Context, obj runtime.Object) (admission.Warnings, error) {
 	hostlog.Info("validate create", "name", r.Name)
 
 	// TODO(user): fill in your validation logic upon object creation.
-	return r.validateHost()
+	return nil, r.validateHost()
 }
 
 // ValidateUpdate implements webhook.Validator so a webhook will be registered for the type
-func (r *Host) ValidateUpdate(old runtime.Object) error {
+func (r *Host) ValidateUpdate(ctx context.Context, old runtime.Object, new runtime.Object) (admission.Warnings, error) {
 	hostlog.Info("validate update", "name", r.Name)
 
 	// TODO(user): fill in your validation logic upon object update.
-	return r.validateHost()
+	return nil, r.validateHost()
 }
 
 // ValidateDelete implements webhook.Validator so a webhook will be registered for the type
-func (r *Host) ValidateDelete() error {
+func (r *Host) ValidateDelete(ctx context.Context, obj runtime.Object) (admission.Warnings, error) {
 	hostlog.Info("validate delete", "name", r.Name)
 
 	// TODO(user): fill in your validation logic upon object deletion.
-	return nil
+	return nil, nil
 }

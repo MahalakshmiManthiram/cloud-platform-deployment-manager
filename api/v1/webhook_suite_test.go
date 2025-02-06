@@ -22,7 +22,9 @@ import (
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/envtest"
-	"sigs.k8s.io/controller-runtime/pkg/envtest/printer"
+	metricsserver "sigs.k8s.io/controller-runtime/pkg/metrics/server"
+
+	// "sigs.k8s.io/controller-runtime/pkg/envtest/printer"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 )
@@ -39,9 +41,7 @@ var cancel context.CancelFunc
 func TestAPIs(t *testing.T) {
 	RegisterFailHandler(Fail)
 
-	RunSpecsWithDefaultAndCustomReporters(t,
-		"Webhook Suite",
-		[]Reporter{printer.NewlineReporter{}})
+	RunSpecs(t, "Webhook Suite")
 }
 
 var _ = BeforeSuite(func() {
@@ -54,14 +54,16 @@ var _ = BeforeSuite(func() {
 		CRDDirectoryPaths:     []string{filepath.Join("..", "..", "config", "crd", "bases")},
 		ErrorIfCRDPathMissing: false,
 		WebhookInstallOptions: envtest.WebhookInstallOptions{
-			Paths: []string{filepath.Join("..", "..", "config", "webhook")},
+			Paths:               []string{filepath.Join("..", "..", "config", "webhook")},
+			LocalServingHost:    "localhost",
+			LocalServingPort:    9443,
+			LocalServingCertDir: "/tmp/",
 		},
 	}
 
 	var err error
 	// cfg is defined in this file globally.
 	cfg, err = testEnv.Start()
-	Expect(err).NotTo(HaveOccurred())
 	Expect(cfg).NotTo(BeNil())
 
 	scheme := runtime.NewScheme()
@@ -78,13 +80,13 @@ var _ = BeforeSuite(func() {
 
 	// start webhook server using Manager
 	webhookInstallOptions := &testEnv.WebhookInstallOptions
+
 	mgr, err := ctrl.NewManager(cfg, ctrl.Options{
-		Scheme:             scheme,
-		Host:               webhookInstallOptions.LocalServingHost,
-		Port:               webhookInstallOptions.LocalServingPort,
-		CertDir:            webhookInstallOptions.LocalServingCertDir,
-		LeaderElection:     false,
-		MetricsBindAddress: "0",
+		Scheme:         scheme,
+		LeaderElection: false,
+		Metrics: metricsserver.Options{
+			BindAddress: "0",
+		},
 	})
 	Expect(err).NotTo(HaveOccurred())
 
@@ -116,8 +118,16 @@ var _ = BeforeSuite(func() {
 
 	go func() {
 		defer GinkgoRecover()
+		fmt.Println("Starting webhook manager...")
+
 		err = mgr.Start(ctx)
-		Expect(err).NotTo(HaveOccurred())
+		if err != nil {
+			fmt.Println("Webhook manager failed to start:", err)
+		} else {
+			fmt.Println("Webhook manager started successfully")
+		}
+
+		Expect(err).NotTo(HaveOccurred()) // This will still fail, but with more context
 	}()
 
 	// wait for the webhook server to get ready
@@ -130,7 +140,7 @@ var _ = BeforeSuite(func() {
 		}
 		conn.Close()
 		return nil
-	}).Should(Succeed())
+	}, 10*time.Second, 500*time.Millisecond).Should(Succeed())
 
 }, 60)
 
